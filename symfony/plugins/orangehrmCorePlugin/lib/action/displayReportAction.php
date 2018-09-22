@@ -166,6 +166,8 @@ abstract class displayReportAction extends basePimReportAction {
 
         ohrmListComponent::setListData($dataSet);
 
+        $params['listElementsData'] = $this->setListDataForPaperReport($params['empName'], $this->getReportTitle(), $headerGroups, $dataSet);
+
         $this->parmetersForListComponent = $params;
         
         $this->initilizeDataRetriever($configurationFactory, $reportableGeneratorService, 'generateReportDataSet', array($reportId, $sql));
@@ -228,4 +230,41 @@ abstract class displayReportAction extends basePimReportAction {
         } 
     }
 
+
+    private function setListDataForPaperReport ($empName, $reportTitle, $headerGroups, $dataSet)
+    {
+        $total = 0;
+        $headers = array();
+        $rows = array();
+        foreach($headerGroups[0]->getHeaders() as $header)
+        {
+            $headers[] = $header->getName();
+        }
+
+        foreach($dataSet as $row)
+        {
+            $fields = array();
+            foreach($headers as $k => $v)
+            {
+                if (isset($row[str_replace(' ','', strtolower($v))]))
+                {
+                    $fields[$k] = $row[str_replace(' ','', strtolower($v))];
+                } elseif (str_replace(' ','', strtolower($v)) === 'time(hours)')
+                {
+                    $fields[$k] = $row['totalduration'];
+                    $total += $row['totalduration'];
+                }
+            }
+            $rows[] = $fields;
+        }
+
+        $listElementsData = array(
+            'employee' => $empName,
+            'reportTitle' => $reportTitle,
+            'totalHours' => $total,
+            'headers' => $headers,
+            'rows' => $rows
+        );
+        return $listElementsData;
+    }
 }
