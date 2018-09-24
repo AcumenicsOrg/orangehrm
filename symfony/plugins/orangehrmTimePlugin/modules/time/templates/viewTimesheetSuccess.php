@@ -17,6 +17,7 @@
  */ ?>
 
 <?php echo javascript_include_tag(plugin_web_path('orangehrmTimePlugin', 'js/viewTimesheet')); ?>
+<?php echo javascript_include_tag(plugin_web_path('orangehrmTimePlugin', 'js/generateExcelReport')); ?>
 
 <?php
 $noOfColumns = sizeof($sf_data->getRaw('rowDates'));
@@ -25,19 +26,21 @@ $width = 350 + $noOfColumns * 75;
 $actionName = sfContext::getInstance()->getActionName();
 
 // TODO better implementation of this functionality
-$timesheetReportService = new TimesheetReportService();
-$reportData = $timesheetReportService->prepareIndividualTimesheetReport($rowDates, $timesheetRows->getRawValue(), $timeService);
-$reportData['timesheetType'] = 'Employee timesheet';
-if (isset($employeeName))
+if ($timesheetRows !== null)
 {
-    $reportData['employee'] = $employeeName;
-} else {
+    $timesheetReportService = new TimesheetReportService();
+    $reportData = $timesheetReportService->prepareIndividualTimesheetReport($rowDates, $timesheetRows->getRawValue(), $timeService);
+    $reportData['timesheetType'] = 'Employee Timesheet';
+    if (isset($employeeName))
+    {
+        $reportData['employee'] = $employeeName;
+    } else {
 
-    $repo = new EmployeeDao();
-    $employee = $repo->getEmployee($sf_user->getAttribute('auth.empNumber'));
-    $reportData['employee'] = $employee->getFirstName() . ' ' . $employee->getLastName();
+        $repo = new EmployeeDao();
+        $employee = $repo->getEmployee($sf_user->getAttribute('auth.empNumber'));
+        $reportData['employee'] = $employee->getFirstName() . ' ' . $employee->getLastName();
+    }
 }
-
 
 ?>
 
@@ -433,47 +436,7 @@ if (isset($employeeName))
 ?>";
                 var dateList  = <?php echo json_encode($dateForm->getDateOptions()); ?>;
                 var closeText = '<?php echo __('Close'); ?>';
-
-
-
-    $('#generateReport').on('click', function()
-    {
-        var timePeriod = null;
-        var reportData = <?php echo json_encode($reportData); ?>;
-        var timeOptions = $('#startDates').find('OPTION');
-        var timePeriodId = $('#startDates').val();
-
-        $.each(timeOptions, function(k, v)
-        {
-            if ($(v).val() == timePeriodId)
-            {
-                timePeriod = $(v).html();
-            }
-        });
-        reportData.timePeriod = timePeriod;
-
-        $.ajax({
-            type: 'POST',
-            url: '<?php echo url_for('time/generateTimesheetReporte'); ?>',
-            data: JSON.stringify(reportData),
-            headers: { 'Content-Type': 'application/json' },
-            success: function (response)
-            {
-                // console.log(response.postData.employee);
-                // console.log(response.postData.reportTitle);
-                // console.log(response.postData.totalHours);
-                // console.log(response.postData.headers);
-                // console.log(response.postData.rows);
-
-                console.log(response);
-
-                alert('Uspesno')
-            },
-            error: function ()
-            {
-                alert('Neuspesno')
-            },
-        })
-    })
+                var reportData = <?php echo json_encode($reportData); ?>;
+                var reportDataUrl = '<?php echo url_for('time/generateTimesheetReporte'); ?>';
 
 </script>

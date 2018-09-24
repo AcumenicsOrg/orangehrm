@@ -166,7 +166,59 @@ abstract class displayReportAction extends basePimReportAction {
 
         ohrmListComponent::setListData($dataSet);
 
-        $params['listElementsData'] = $this->setListDataForPaperReport($params['empName'], $this->getReportTitle(), $headerGroups, $dataSet);
+        // TODO new feature for generating report
+        if ($dataSet !== null)
+        {
+            $timesheetReportService = new TimesheetReportService();
+            $params['listElementsData'] = $timesheetReportService->prepareProjectTimesheetReporte($headerGroups, $dataSet);
+            if (isset($params['empName']) && strlen($params['empName']) > 0)
+            {
+                $params['listElementsData']['timesheetType'] = 'Employee Report';
+                $params['listElementsData']['employee'] = $params['empName'];
+            }
+
+            if (isset($params['projectName']) && strlen($params['projectName']) > 0)
+            {
+                $params['listElementsData']['timesheetType'] = 'Project Report';
+                $params['listElementsData']['projectName'] = $params['projectName'];
+            }
+            if (isset($params['projectDateRangeFrom']) && strlen($params['projectDateRangeFrom']) > 0)
+            {
+                $params['listElementsData']['timesheetType'] = 'Project Report';
+                $params['listElementsData']['dateRangeFrom'] = $params['projectDateRangeFrom'];
+            }
+            if (isset($params['projectDateRangeTo']) && strlen($params['projectDateRangeTo']) > 0)
+            {
+                $params['listElementsData']['timesheetType'] = 'Project Report';
+                $params['listElementsData']['dateRangeTo'] = $params['projectDateRangeTo'];
+            }
+
+            if (isset($params['attendanceDateRangeFrom']) && strlen($params['attendanceDateRangeFrom']) > 0)
+            {
+                $params['listElementsData']['timesheetType'] = 'Attendance Report';
+                $params['listElementsData']['dateRangeFrom'] = $params['attendanceDateRangeFrom'];
+            }
+            if (isset($params['attendanceDateRangeTo']) && strlen($params['attendanceDateRangeTo']) > 0)
+            {
+                $params['listElementsData']['timesheetType'] = 'Attendance Report';
+                $params['listElementsData']['dateRangeTo'] = $params['attendanceDateRangeTo'];
+            }
+            if (isset($params['employeeStatus']) && strlen($params['employeeStatus']) > 0)
+            {
+                $params['listElementsData']['timesheetType'] = 'Attendance Report';
+                $params['listElementsData']['employeeStatus'] = $params['employeeStatus'];
+            }
+            if (isset($params['jobTitle']) && strlen($params['jobTitle']) > 0)
+            {
+                $params['listElementsData']['timesheetType'] = 'Attendance Report';
+                $params['listElementsData']['jobTitle'] = $params['jobTitle'];
+            }
+            if (isset($params['subUnit']) && strlen($params['subUnit']) > 0)
+            {
+                $params['listElementsData']['timesheetType'] = 'Attendance Report';
+                $params['listElementsData']['subUnit'] = $params['subUnit'];
+            }
+        }
 
         $this->parmetersForListComponent = $params;
         
@@ -228,43 +280,5 @@ abstract class displayReportAction extends basePimReportAction {
         } else {
             return htmlspecialchars($data);
         } 
-    }
-
-
-    private function setListDataForPaperReport ($empName, $reportTitle, $headerGroups, $dataSet)
-    {
-        $total = 0;
-        $headers = array();
-        $rows = array();
-        foreach($headerGroups[0]->getHeaders() as $header)
-        {
-            $headers[] = $header->getName();
-        }
-
-        foreach($dataSet as $row)
-        {
-            $fields = array();
-            foreach($headers as $k => $v)
-            {
-                if (isset($row[str_replace(' ','', strtolower($v))]))
-                {
-                    $fields[$k] = $row[str_replace(' ','', strtolower($v))];
-                } elseif (str_replace(' ','', strtolower($v)) === 'time(hours)')
-                {
-                    $fields[$k] = $row['totalduration'];
-                    $total += $row['totalduration'];
-                }
-            }
-            $rows[] = $fields;
-        }
-
-        $listElementsData = array(
-            'employee' => $empName,
-            'reportTitle' => $reportTitle,
-            'totalHours' => $total,
-            'headers' => $headers,
-            'rows' => $rows
-        );
-        return $listElementsData;
     }
 }

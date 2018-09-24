@@ -16,6 +16,18 @@ class TimesheetReportService
 
     private $timeService = null;
 
+    public function prepareProjectTimesheetReporte ($headers, $dataRows)
+    {
+        $this->setProjectHeaders($headers);
+        $this->setProjectRows($dataRows);
+
+
+        return array(
+            'headers' => $this->headers,
+            'rows' => $this->rows,
+            'footer' => $this->footer
+        );
+    }
 
     public function prepareIndividualTimesheetReport($dates, $rows, $timeService = null)
     {
@@ -30,7 +42,6 @@ class TimesheetReportService
             'footer' => $this->footer
         );
     }
-
 
 
     private function getRowsWithDays ($rows, $tmpDates)
@@ -97,5 +108,40 @@ class TimesheetReportService
             $this->headers[] = __(date('D', strtotime($rowDate))) . ' ' . date('j', strtotime($rowDate));
         }
         $this->headers[] = 'Total';
+    }
+
+    private function setProjectRows ($dataSet)
+    {
+        $total = 0;
+        foreach($dataSet as $row)
+        {
+            $fields = array();
+            foreach($this->headers as $k => $v)
+            {
+                if (isset($row[str_replace(' ','', strtolower($v))]))
+                {
+                    $fields[$k] = $row[str_replace(' ','', strtolower($v))];
+                } elseif (str_replace(' ','', strtolower($v)) === 'time(hours)')
+                {
+                    $fields[$k] = $row['totalduration'];
+                    $total += $row['totalduration'];
+                }
+            }
+            $this->rows[] = $fields;
+        }
+        if (count($this->headers) > 2)
+        {
+            $this->footer = array('Total','', $total);
+        } else {
+            $this->footer = array('Total', $total);
+        }
+    }
+
+    private function setProjectHeaders ($headers)
+    {
+        foreach($headers[0]->getHeaders() as $header)
+        {
+            $this->headers[] = $header->getName();
+        }
     }
 }
