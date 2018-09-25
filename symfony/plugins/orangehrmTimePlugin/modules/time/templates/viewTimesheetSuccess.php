@@ -17,12 +17,31 @@
  */ ?>
 
 <?php echo javascript_include_tag(plugin_web_path('orangehrmTimePlugin', 'js/viewTimesheet')); ?>
+<?php echo javascript_include_tag(plugin_web_path('orangehrmTimePlugin', 'js/generateExcelReport')); ?>
 
 <?php
 $noOfColumns = sizeof($sf_data->getRaw('rowDates'));
 $width = 350 + $noOfColumns * 75;
 
 $actionName = sfContext::getInstance()->getActionName();
+
+// TODO better implementation of this functionality
+if ($timesheetRows !== null)
+{
+    $timesheetReportService = new TimesheetReportService();
+    $reportData = $timesheetReportService->prepareIndividualTimesheetReport($rowDates, $timesheetRows->getRawValue(), $timeService);
+    $reportData['timesheetType'] = 'Employee Timesheet';
+    if (isset($employeeName))
+    {
+        $reportData['employee'] = $employeeName;
+    } else {
+
+        $repo = new EmployeeDao();
+        $employee = $repo->getEmployee($sf_user->getAttribute('auth.empNumber'));
+        $reportData['employee'] = $employee->getFirstName() . ' ' . $employee->getLastName();
+    }
+}
+
 ?>
 
 <style type="text/css">
@@ -103,6 +122,7 @@ $actionName = sfContext::getInstance()->getActionName();
                             else:
                                 // timesheet available 
                                 $class = 'odd';
+
                                 foreach ($timesheetRows as $timesheetItemRow):
                                     if ($format == '1')
                                         $total = '0:00';
@@ -387,6 +407,9 @@ $actionName = sfContext::getInstance()->getActionName();
 
     <?php endif; ?>
 <?php } ?>
+
+<button id="generateReport">Report</button>
+
 <script type="text/javascript">
     var datepickerDateFormat = '<?php echo get_datepicker_date_format($sf_user->getDateFormat()); ?>';
     var displayDateFormat = '<?php echo str_replace('yy', 'yyyy', get_datepicker_date_format($sf_user->getDateFormat())); ?>';
@@ -413,5 +436,7 @@ $actionName = sfContext::getInstance()->getActionName();
 ?>";
                 var dateList  = <?php echo json_encode($dateForm->getDateOptions()); ?>;
                 var closeText = '<?php echo __('Close'); ?>';
-    
+                var reportData = <?php echo json_encode($reportData); ?>;
+                var reportDataUrl = '<?php echo url_for('time/generateTimesheetReporte'); ?>';
+
 </script>
