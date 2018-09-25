@@ -1,0 +1,18 @@
+#generateReportWrapper {
+    background-color: #eaeaea;
+    border: 1px solid #dedede;
+    padding: 10px;
+}
+
+#generateReportWrapper p {
+    text-align: right;
+}
+
+#generateReport {
+    background: #33ac3f;
+    color: #fff;
+    font-size: 15px;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 3px;
+}

@@ -1,7 +1,5 @@
 $(document).ready(function() {
 
-
-
     $('#generateReport').on('click', function()
     {
         if (reportData.timesheetType === 'Employee Timesheet')
@@ -18,6 +16,11 @@ $(document).ready(function() {
                 }
             });
             reportData.timePeriod = timePeriod;
+            var status = $('#timesheet_status').find('H2');
+            if (status)
+            {
+                reportData.status = status.html();
+            }
         }
 
         $.ajax({
@@ -27,19 +30,14 @@ $(document).ready(function() {
             headers: { 'Content-Type': 'application/json' },
             success: function (response)
             {
-                // console.log(response.postData.employee);
-                // console.log(response.postData.reportTitle);
-                // console.log(response.postData.totalHours);
-                // console.log(response.postData.headers);
-                // console.log(response.postData.rows);
-
-                console.log(response);
-
-                alert('Uspesno')
+                var link = document.createElement("a");
+                link.download = response.name;
+                link.href = response.link;
+                link.click();
             },
             error: function ()
             {
-                alert('Neuspesno')
+                alert('An error occurred while generating report. Please try later. ')
             },
         })
     })
