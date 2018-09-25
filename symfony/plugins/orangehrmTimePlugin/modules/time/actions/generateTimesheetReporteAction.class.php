@@ -149,13 +149,12 @@ class generateTimesheetReporteAction extends sfAction
 
         foreach($data['rows'] as $k => $v)
         {
-            $headerRow += $k;
             foreach($v as $key => $column)
             {
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($key + 1, $headerRow, $column);
             }
+            $headerRow ++;
         }
-        $headerRow++;
 
         foreach($data['footer'] as $k => $v)
         {
