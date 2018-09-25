@@ -149,6 +149,11 @@ class generateTimesheetReporteAction extends sfAction
 
         foreach($data['rows'] as $k => $v)
         {
+            if ($data['timesheetType'] === 'Attendance Report')
+            {
+                $v[0] = $data['employee'];
+            }
+
             foreach($v as $key => $column)
             {
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($key + 1, $headerRow, $column);
