@@ -15,6 +15,9 @@ class generateTimesheetReporteAction extends sfAction
     {
         $data = json_decode($request->getContent(), true);
 
+        $uri = $request->getUri();
+        $webRoot = explode('index', $uri)[0];
+
         $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
 
         $root = $this->getContext()->getConfiguration()->getRootDir() . '/web/reports';
@@ -28,11 +31,17 @@ class generateTimesheetReporteAction extends sfAction
         switch($data['timesheetType'])
         {
             case 'Employee Report':
+
+                $fileName = str_replace(' ', '_', strtolower($data['timesheetType'])) . '_' . str_replace(' ', '_', strtolower($data['employee']));
+
                 $title = $data['timesheetType'] . ' for ';
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $title);
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $data['employee']);
                 break;
             case 'Project Report':
+
+                $fileName = str_replace(' ', '_', strtolower($data['timesheetType'])) . '_' . str_replace('-', '_', str_replace(' ', '', strtolower($data['projectName'])));
+
                 $title = $data['timesheetType'] . ' for ';
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $title);
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $data['projectName']);
@@ -54,6 +63,9 @@ class generateTimesheetReporteAction extends sfAction
 
                 break;
             case 'Attendance Report':
+
+                $fileName = str_replace(' ', '_', strtolower($data['timesheetType'])) . '_' . str_replace(' ', '_', strtolower($data['employee']));
+
                 $title = $data['timesheetType'] . ' for ';
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $title);
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $data['employee']);
@@ -99,6 +111,9 @@ class generateTimesheetReporteAction extends sfAction
 
                 break;
             default:
+
+                $fileName = str_replace(' ', '_', strtolower($data['timesheetType'])) . '_' . str_replace(' ', '_', strtolower($data['employee']));
+
                 $title = $data['timesheetType'] . ' for ';
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $title);
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $data['employee']);
@@ -109,6 +124,15 @@ class generateTimesheetReporteAction extends sfAction
                     $timePeriod = 'Timesheet for period: ';
                     $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $timePeriod);
                     $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $data['timePeriod']);
+                }
+
+                if (isset($data['status']))
+                {
+                    $headerRow++;
+                    $statusData = explode(':', $data['status']);
+                    $statusFor = $statusData[0] . ': ';
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $statusFor);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, trim($statusData[1]));
                 }
 
                 break;
@@ -125,13 +149,12 @@ class generateTimesheetReporteAction extends sfAction
 
         foreach($data['rows'] as $k => $v)
         {
-            $headerRow += $k;
             foreach($v as $key => $column)
             {
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($key + 1, $headerRow, $column);
             }
+            $headerRow ++;
         }
-        $headerRow++;
 
         foreach($data['footer'] as $k => $v)
         {
@@ -188,13 +211,10 @@ class generateTimesheetReporteAction extends sfAction
 //            $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($k + 1, 10, $v);
 //        }
 
-        $filename = 'RMA-Report_' . time() . '.xlsx';
-        $fileLocation = $root . '/' . $filename;
-        $writer->save( $fileLocation);
+        $newFileName = $fileName . '_' . time() . '.xlsx';
+        $fileLocation = $root . '/' . $newFileName;
+        $writer->save($fileLocation);
 
-        //var_dump($spreadsheet); die;
-
-
-        return $this->renderJson(array('postData' => $data));
+        return $this->renderJson(array('link' => $webRoot . 'reports/' . $newFileName, 'name' => $newFileName));
     }
 }

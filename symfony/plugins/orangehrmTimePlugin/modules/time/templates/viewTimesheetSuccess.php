@@ -16,6 +16,7 @@
  * Boston, MA  02110-1301, USA
  */ ?>
 
+<?php use_stylesheet('../orangehrmTimePlugin/css/generateReport'); ?>
 <?php echo javascript_include_tag(plugin_web_path('orangehrmTimePlugin', 'js/viewTimesheet')); ?>
 <?php echo javascript_include_tag(plugin_web_path('orangehrmTimePlugin', 'js/generateExcelReport')); ?>
 
@@ -408,7 +409,17 @@ if ($timesheetRows !== null)
     <?php endif; ?>
 <?php } ?>
 
-<button id="generateReport">Report</button>
+<!--<div id="generateReportWraper" class="box miniList" style="background-color: #eaeaea; border: 1px solid #dedede; padding: 10px;">-->
+<!--    <p style="text-align: right;">-->
+<!--        <button id="generateReport" style="background: #33ac3f; color: #fff; font-size: 15px; padding: 8px 20px;border: none; border-radius: 3px;">Download Report</button>-->
+<!--    </p>-->
+<!--</div>-->
+
+<div id="generateReportWrapper" class="box miniList">
+    <p>
+        <button id="generateReport">Download Report</button>
+    </p>
+</div>
 
 <script type="text/javascript">
     var datepickerDateFormat = '<?php echo get_datepicker_date_format($sf_user->getDateFormat()); ?>';

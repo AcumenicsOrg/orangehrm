@@ -1,3 +1,4 @@
+<?php use_stylesheet('../orangehrmTimePlugin/css/generateReport'); ?>
 <?php echo javascript_include_tag(plugin_web_path('orangehrmTimePlugin', 'js/generateExcelReport')); ?>
 <?php
 
@@ -5,7 +6,13 @@ if ($attendancePermissions->canRead()) {
     include_component('core', 'ohrmList', $parmetersForListComponent);
 }
 ?>
-<button id="generateReport">Report</button>
+<!--<button id="generateReport">Report</button>-->
+
+<div id="generateReportWrapper" class="box miniList">
+    <p>
+        <button id="generateReport">Download Report</button>
+    </p>
+</div>
 
 <script>
 
