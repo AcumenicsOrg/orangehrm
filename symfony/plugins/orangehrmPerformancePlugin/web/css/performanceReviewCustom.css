@@ -1,0 +1,10 @@
+.custom-radio-button-div {
+    display: inline-block;
+    margin: 0 4px;
+}
+
+.custom-radio-buton-label {
+    position: relative;
+    left: -3px;
+    top: 5px;
+}
