@@ -24,14 +24,11 @@ class generateTimesheetReporteAction extends sfAction
 
         $spreadsheet = $reader->load($root . '/template/orange_test_template.xlsx'); //Excel as 2007-2013 xlsx
         $spreadsheet->setActiveSheetIndex(0);
-        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
-        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
-        $spreadsheet->getDefaultStyle()->getFont()->setName('Arial');
-        $spreadsheet->getDefaultStyle()->getFont()->setSize(8);
-        $spreadsheet->getActiveSheet()->getStyle('B3')
-            ->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_RED);
-        $spreadsheet->getActiveSheet()->getStyle('B3')
-            ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(10);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(30);
+        $spreadsheet->getActiveSheet()->getStyle('B3:C3')
+            ->getFont()->setBold(true);
 
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 
@@ -40,98 +37,141 @@ class generateTimesheetReporteAction extends sfAction
         {
             case 'Employee Report':
 
+                $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(20);
+                $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(20);
                 $fileName = str_replace(' ', '_', strtolower($data['timesheetType'])) . '_' . str_replace(' ', '_', strtolower($data['employee']));
 
                 $title = $data['timesheetType'] . ' for ';
-                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $title);
-                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $data['employee']);
+                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $title);
+                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $headerRow, $data['employee']);
+                //$headerRow++;
                 break;
             case 'Project Report':
 
+                $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(30);
                 $fileName = str_replace(' ', '_', strtolower($data['timesheetType'])) . '_' . str_replace('-', '_', str_replace(' ', '', strtolower($data['projectName'])));
 
                 $title = $data['timesheetType'] . ' for ';
-                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $title);
-                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $data['projectName']);
+                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $title);
+                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $headerRow, $data['projectName']);
+                $headerRow++;
 
                 if (isset($data['dateRangeFrom']))
                 {
                     $headerRow++;
                     $headerDateFrom = 'Project report from: ';
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $headerDateFrom);
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $data['dateRangeFrom']);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(2, $headerRow, $headerDateFrom)
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(3, $headerRow, $data['dateRangeFrom'])
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $headerDateFrom);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $headerRow, $data['dateRangeFrom']);
                 }
                 if (isset($data['dateRangeTo']))
                 {
                     $headerRow++;
                     $headerDateTo = 'Project report to: ';
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $headerDateTo);
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $data['dateRangeTo']);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(2, $headerRow, $headerDateTo)
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(3, $headerRow, $data['dateRangeTo'])
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $headerDateTo);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $headerRow, $data['dateRangeTo']);
                 }
 
                 break;
             case 'Attendance Report':
 
+                $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(30);
                 $fileName = str_replace(' ', '_', strtolower($data['timesheetType'])) . '_' . str_replace(' ', '_', strtolower($data['employee']));
 
                 $title = $data['timesheetType'] . ' for ';
-                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $title);
-                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $data['employee']);
+                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $title);
+                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $headerRow, $data['employee']);
+                $headerRow++;
 
                 if (isset($data['dateRangeFrom']))
                 {
                     $headerRow++;
                     $headerDateFrom = 'Attendance report from: ';
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $headerDateFrom);
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $data['dateRangeFrom']);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(2, $headerRow, $headerDateFrom)
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(3, $headerRow, $data['dateRangeFrom'])
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $headerDateFrom);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $headerRow, $data['dateRangeFrom']);
                 }
                 if (isset($data['dateRangeTo']))
                 {
                     $headerRow++;
                     $headerDateTo = 'Attendance report to: ';
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $headerDateTo);
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $data['dateRangeTo']);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(2, $headerRow, $headerDateTo)
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(3, $headerRow, $data['dateRangeTo'])
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $headerDateTo);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $headerRow, $data['dateRangeTo']);
                 }
 
                 if (isset($data['employeeStatus']))
                 {
                     $headerRow++;
                     $status = 'Employee status: ';
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $status);
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $data['employeeStatus']);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(2, $headerRow, $status)
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(3, $headerRow, $data['employeeStatus'])
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $status);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $headerRow, $data['employeeStatus']);
                 }
 
                 if (isset($data['jobTitle']))
                 {
                     $headerRow++;
                     $jobTitle = 'Employee job title: ';
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $jobTitle);
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $data['jobTitle']);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(2, $headerRow, $jobTitle)
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(3, $headerRow, $data['jobTitle'])
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $jobTitle);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $headerRow, $data['jobTitle']);
                 }
 
                 if (isset($data['subUnit']))
                 {
                     $headerRow++;
                     $subUnit = 'Employee subunit: ';
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $subUnit);
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $data['subUnit']);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(2, $headerRow, $subUnit)
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(3, $headerRow, $data['subUnit'])
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $subUnit);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $headerRow, $data['subUnit']);
                 }
 
                 break;
             default:
 
+                $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(30);
+                $spreadsheet->getActiveSheet()->getColumnDimension('D:K')->setWidth(8);
+
                 $fileName = str_replace(' ', '_', strtolower($data['timesheetType'])) . '_' . str_replace(' ', '_', strtolower($data['employee']));
 
                 $title = $data['timesheetType'] . ' for ';
-                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $title);
-                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $data['employee']);
+                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $title);
+                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $headerRow, $data['employee']);
+                $headerRow++;
 
                 if (isset($data['timePeriod']))
                 {
                     $headerRow++;
                     $timePeriod = 'Timesheet for period: ';
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $timePeriod);
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $data['timePeriod']);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(2, $headerRow, $timePeriod)
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(3, $headerRow, $timePeriod)
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $timePeriod);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $headerRow, $data['timePeriod']);
                 }
 
                 if (isset($data['status']))
@@ -139,18 +179,28 @@ class generateTimesheetReporteAction extends sfAction
                     $headerRow++;
                     $statusData = explode(':', $data['status']);
                     $statusFor = $statusData[0] . ': ';
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $headerRow, $statusFor);
-                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, trim($statusData[1]));
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(2, $headerRow, $statusFor)
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(3, $headerRow, trim($statusData[1]))
+                        ->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $headerRow, $statusFor);
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $headerRow, trim($statusData[1]));
                 }
 
                 break;
 
         }
 
-        $headerRow += 3;
+        $headerRow += 2;
 
         foreach($data['headers'] as $k => $v)
         {
+            $k++;
+            $spreadsheet->getActiveSheet()->getStyleByColumnAndRow($k + 1, $headerRow)
+                ->getFont()->setBold(true);
+            $spreadsheet->getActiveSheet()->getStyleByColumnAndRow($k + 1, $headerRow)
+                ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFDCE6F1');
+
             $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($k + 1, $headerRow, $v);
         }
         $headerRow++;
@@ -162,8 +212,21 @@ class generateTimesheetReporteAction extends sfAction
                 $v[0] = $data['employee'];
             }
 
+            if ($data['timesheetType'] != 'Attendance Report' && $data['timesheetType'] != 'Project Report' && $data['timesheetType'] != 'Employee Report')
+            {
+                $z = 1;
+                $spreadsheet->getActiveSheet()->getStyleByColumnAndRow($z + 10, $headerRow)
+                    ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFF9C373');
+            }
+
             foreach($v as $key => $column)
             {
+                $key++;
+                $spreadsheet->getActiveSheet()->getStyleByColumnAndRow($key + 3, $headerRow, $column)
+                    ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+                $spreadsheet->getActiveSheet()->getStyleByColumnAndRow($key + 10, $headerRow, $column)
+                    ->getFont()->setBold(true);
+
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($key + 1, $headerRow, $column);
             }
             $headerRow ++;
@@ -171,9 +234,16 @@ class generateTimesheetReporteAction extends sfAction
 
         foreach($data['footer'] as $k => $v)
         {
+            $k++;
+            $spreadsheet->getActiveSheet()->getStyleByColumnAndRow($k + 1, $headerRow)
+                ->getFont()->setBold(true);
+            $spreadsheet->getActiveSheet()->getStyleByColumnAndRow($k + 1, $headerRow)
+                ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFF9C373');
+            $spreadsheet->getActiveSheet()->getStyleByColumnAndRow($k + 3, $headerRow)
+                ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+
             $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($k + 1, $headerRow, $v);
         }
-
 
 //        $styleArray = array(
 //            'fill' => array(
