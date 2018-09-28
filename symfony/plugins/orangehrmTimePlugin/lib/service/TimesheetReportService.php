@@ -63,7 +63,7 @@ class TimesheetReportService
                     {
                         $totalByColumnArr[$v] = 0;
                     }
-                    $hours = ($row['timesheetItems'][$tmpDates[$v]]->getDuration() !== null) ? $row['timesheetItems'][$tmpDates[$v]]->getConvertTime() : '0';
+                    $hours = ($row['timesheetItems'][$tmpDates[$v]]->getDuration() !== null && $row['timesheetItems'][$tmpDates[$v]]->getDuration() !== '0') ? $row['timesheetItems'][$tmpDates[$v]]->getConvertTime() : '0';
                     $duration = ($row['timesheetItems'][$tmpDates[$v]]->getDuration() !== null) ? $row['timesheetItems'][$tmpDates[$v]]->getDuration() : 0;
                     $fields[$k] = $hours;
                     $totalByRow += (int)$duration;
