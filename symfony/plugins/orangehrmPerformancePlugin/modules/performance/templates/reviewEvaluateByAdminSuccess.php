@@ -4,6 +4,8 @@
 use_stylesheets_for_form($form);
 Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, false);
 ?>
+<?php use_stylesheet('../orangehrmPerformancePlugin/css/performanceReviewCustom'); ?>
+
 
 <?php echo isset($templateMessage) ? templateMessage($templateMessage) : ''; ?>
 
@@ -132,8 +134,18 @@ Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, 
                                                         <td class="rightAlign"><center><?php echo $rating->getKpi()->getMinRating() ?></center></td>
                                                         <td class="rightAlign"></center><?php echo $rating->getKpi()->getMaxRating() ?></center></td>
                                                     <?php } ?>
-                                                    <td><center><input class="rightAlign" min="<?php echo $rating->getKpi()->getMinRating() ?>" max="<?php echo $rating->getKpi()->getMaxRating() ?>"  type="text" value="<?php echo $rating->getRating(); ?>" id="rating_<?php echo $rating->getId(); ?>"  name="rating[<?php echo $rating->getId(); ?>]" /></center></td>
-                                                    <td><textarea class="comment" type="text" id="comment_<?php echo $rating->getId(); ?>" name="comment[<?php echo $rating->getId(); ?>]" ><?php echo $rating->getComment(); ?></textarea> </td>                   
+                                                    <td style="text-align: center">
+                                                        <form action="">
+                                                        <?php for($iter = $rating->getKpi()->getMinRating(); $iter < $rating->getKpi()->getMaxRating() + 1; $iter++){ ?>
+                                                            <div class="custom-radio-button-div">
+                                                                <input class="custom-review-radio-input" name="rating[<?php echo $rating->getId(); ?>]" type="radio" value="<?php echo $iter ?>">
+                                                                <br>
+                                                                <label class="custom-radio-buton-label" for=""><?php echo $iter ?></label>
+                                                            </div>
+                                                        <?php } ?>
+                                                        </form>
+                                                    <center><input hidden class="rightAlign" min="<?php echo $rating->getKpi()->getMinRating() ?>" max="<?php echo $rating->getKpi()->getMaxRating() ?>"  type="text" value="<?php echo $rating->getRating(); ?>" id="rating_<?php echo $rating->getId(); ?>"  name="rating[<?php echo $rating->getId(); ?>]" /></center></td>
+                                                    <td><textarea class="comment" type="text" id="comment_<?php echo $rating->getId(); ?>" name="comment[<?php echo $rating->getId(); ?>]" ><?php echo $rating->getComment(); ?></textarea> </td>
                                                     </tr>            
                                                     <?php
                                                 }
@@ -224,6 +236,15 @@ Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, 
 </div>
 
 <script>
+    $('.custom-review-radio-input').bind('change', function () {
+        $('#rating_<?php echo $rating->getId(); ?>').val(this.value);
+    });
+
+    var radioButtons = $('.custom-review-radio-input');
+
+    for (var iter = 0; iter < radioButtons.length; iter++) {
+        if(radioButtons[iter].value == <?php echo $rating->getRating(); ?>) radioButtons[iter].checked = true;
+    }
 
     var backUrl = '<?php echo url_for($backUrl); ?>';
 
