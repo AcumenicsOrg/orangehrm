@@ -16,3 +16,7 @@
     border: none;
     border-radius: 3px;
 }
+
+#generateReport:hover {
+    background: #33AC3F;
+}
