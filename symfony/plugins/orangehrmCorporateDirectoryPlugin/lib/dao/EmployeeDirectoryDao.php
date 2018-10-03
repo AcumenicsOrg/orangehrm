@@ -30,8 +30,8 @@ class EmployeeDirectoryDao extends BaseDao{
             'middleName' => 'e.emp_middle_name',
             'lastName' => 'e.emp_lastName',
             'job_title' => 'j.job_title',
-        'emp_work_telephone' => 'e.emp_work_telephone', 
-        'emp_work_email' => 'e.emp_work_email',
+            'emp_work_telephone' => 'pr.name',
+            'emp_work_email' => 'e.emp_work_email',
             'employee_status' => 'es.estat_name',
             'sub_unit' => 'cs.name',
             'termination' => 'e.termination_id',
@@ -126,6 +126,21 @@ class EmployeeDirectoryDao extends BaseDao{
                 'cs.name AS subDivision, cs.id AS subDivisionId,' .
                 'j.job_title AS jobTitle, j.id AS jobTitleId, j.is_deleted AS isDeleted, ' .
                 'es.name AS employeeStatus, es.id AS employeeStatusId, '.
+                '
+                    (
+                        CASE
+                            WHEN pa.project_id IS NOT NULL THEN
+                                (
+                                    SELECT GROUP_CONCAT(ohrm_project.name) 
+                                    FROM ohrm_project WHERE ohrm_project.project_id IN ( 
+                                        SELECT ohrm_project_admin.project_id  
+                                        FROM ohrm_project_admin WHERE ohrm_project_admin.emp_number = e.emp_number
+                                    )
+                                )
+                            ELSE \'\'
+                        END
+                    ) as project_name,
+                ' .
                 'e.emp_hm_telephone,  e.emp_mobile, e.emp_work_telephone, e.emp_work_email, e.emp_oth_email, '.
 
                 'GROUP_CONCAT(DISTINCT loc.id, \'##\',loc.name) AS locationIds';
@@ -136,6 +151,8 @@ class EmployeeDirectoryDao extends BaseDao{
                 '  LEFT JOIN ohrm_job_title j on j.id = e.job_title_code ' .
                 '  LEFT JOIN ohrm_employment_status es on e.emp_status = es.id ' .
                 '  LEFT JOIN hs_hr_emp_locations l ON l.emp_number = e.emp_number ' .
+                ' LEFT JOIN ohrm_project_admin pa on pa.emp_number = e.emp_number' .
+                ' LEFT JOIN ohrm_project pr on pr.project_id = pa.project_id ' .
                 '  LEFT JOIN ohrm_location loc ON l.location_id = loc.id';
 
         /* search filters */
@@ -162,6 +179,9 @@ class EmployeeDirectoryDao extends BaseDao{
                         $bindParams[] = $searchBy;
                     } else if ($searchField == 'id') {
                         $conditions[] = ' e.employee_id LIKE ? ';
+                        $bindParams[] = $searchBy;
+                    } else if ($searchField == 'emp_work_telephone') {
+                        $conditions[] = ' pr.name LIKE ? ';
                         $bindParams[] = $searchBy;
                     } else if ($searchField == 'job_title') {
                         $conditions[] = ' j.id = ? ';
@@ -314,10 +334,10 @@ class EmployeeDirectoryDao extends BaseDao{
                     $employee->setTerminationId($row['terminationId']);
                     $employee->setEmpHmTelephone($row['emp_hm_telephone']);
                     $employee->setEmpMobile($row['emp_mobile']);
-                    $employee->setEmpWorkTelephone($row['emp_work_telephone']);
+                    $employee->setEmpWorkTelephone($row['project_name']);
                     $employee->setEmpWorkEmail($row['emp_work_email']);
                     $employee->setEmpOthEmail($row['emp_oth_email']);
- 
+
                     $jobTitle = new JobTitle();
                     $jobTitle->setId($row['jobTitleId']);
                     $jobTitle->setJobTitleName($row['jobTitle']);
