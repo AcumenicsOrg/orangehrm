@@ -1980,7 +1980,10 @@ class EmployeeDao extends BaseDao {
                     } else if ($searchField == 'job_title') {
                         $conditions[] = ' j.id = ? ';
                         $bindParams[] = $searchBy;
-                    } else if ($searchField == 'employee_status') {
+                    } else if ($searchField == 'emp_work_telephone') {
+                        $conditions[] = ' e.custom1 LIKE ? ';
+                        $bindParams[] = $searchBy;
+                    }else if ($searchField == 'employee_status') {
                         $conditions[] = ' es.id = ? ';
                         $bindParams[] = $searchBy;
                     } else if ($searchField == 'gender') {

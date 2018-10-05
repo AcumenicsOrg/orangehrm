@@ -23,9 +23,12 @@ class EmployeeDirectorySearchForm extends BaseForm {
     public function configure() {
 
         $widgets['emp_name'] = new ohrmWidgetEmployeeNameAutoFill(array('jsonList' => $this->getEmployeeListAsJson()), array('class' => 'formInputText'));
+        $widgets['emp_work_telephone'] = new ohrmWidgetEmployeeNameAutoFill(array('jsonList' => $this->getProjectListAsJson()), array('class' => 'formInputText'));
+
         $this->setWidgets($widgets);
         $this->setvalidators(array(
-            'emp_name' => new ohrmValidatorEmployeeNameAutoFill()
+            'emp_name' => new ohrmValidatorEmployeeNameAutoFill(),
+            'emp_work_telephone' => new ohrmValidatorEmployeeNameAutoFill(array('required' => false))
         ));
 
         /* Setting job titles */
@@ -42,7 +45,8 @@ class EmployeeDirectorySearchForm extends BaseForm {
         $labels = array(
             'emp_name' => __('Name'),
             'job_title' => __('Job Title'),
-            'location' => __('Location')
+            'location' => __('Location'),
+            'emp_work_telephone' => __('Project name')
         );
 
         return $labels;
@@ -77,6 +81,7 @@ class EmployeeDirectorySearchForm extends BaseForm {
 
     
     public function getEmployeeListAsJson() {
+
         $jsonArray = array();
         $employeeService = new EmployeeService();
         $employeeService->setEmployeeDao(new EmployeeDao());
@@ -94,6 +99,21 @@ class EmployeeDirectorySearchForm extends BaseForm {
             $jsonArray[] = array('name' => $name, 'id' => $employee['empNumber']);
         }
 
+        $jsonString = json_encode($jsonArray);
+
+        return $jsonString;
+    }
+
+    public function getProjectListAsJson() {
+        $jsonArray = array();
+        $projectService = new ProjectService();
+        $projectService->setProjectDao(new ProjectDao());
+        $projectService instanceof ProjectService;
+        $list = $projectService->getActiveProjectList();
+        $jsonArray[] = array('name' => __('All'), 'id' => '');
+        foreach ($list as $proj) {
+            $jsonArray[] = array('name' => $proj['data']['name'], 'id' => $proj['data']['name']);
+        }
         $jsonString = json_encode($jsonArray);
 
         return $jsonString;

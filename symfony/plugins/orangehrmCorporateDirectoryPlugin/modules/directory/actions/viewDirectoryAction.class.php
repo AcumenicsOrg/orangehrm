@@ -77,6 +77,10 @@ class viewDirectoryAction extends basePimAction {
             $filters['employee_name'] = str_replace(' (' . __('Past Employee') . ')', '', $filters['emp_name']['empName']);
         }
 
+        if (isset($filters['emp_work_telephone']['empName'])) {
+            $filters['emp_work_telephone'] = $filters['emp_work_telephone']['empName'];
+        }
+
         $this->filterApply = !empty($filters);
 
         $empList = $this->getEmployeeService()->getEmployeeIdList();
