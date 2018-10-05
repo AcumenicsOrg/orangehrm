@@ -126,7 +126,7 @@ class EmployeeDirectoryDao extends BaseDao{
                 'cs.name AS subDivision, cs.id AS subDivisionId,' .
                 'j.job_title AS jobTitle, j.id AS jobTitleId, j.is_deleted AS isDeleted, ' .
                 'es.name AS employeeStatus, es.id AS employeeStatusId, '.
-                'CONCAT(COALESCE(e.custom1,\'\'), \', \', COALESCE(e.custom2,\'\')) as project_name, ' .
+                'CONCAT(COALESCE(CONCAT(e.custom1, \', \'),\'\'), COALESCE(CONCAT(e.custom2, \', \'),\'\')) as project_name, ' .
                 'e.emp_hm_telephone,  e.emp_mobile, e.emp_work_telephone, e.emp_work_email, e.emp_oth_email, '.
 
                 'GROUP_CONCAT(DISTINCT loc.id, \'##\',loc.name) AS locationIds';

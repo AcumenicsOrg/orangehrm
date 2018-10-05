@@ -80,7 +80,7 @@ if ((sizeof($list)) > 0) {
                                     <?php
                                     echo $emp->getEmpWorkTelephone();
                                     if (($emp->getEmpWorkTelephone() != NULL && $emp->getEmpWorkEmail() != NULL)) {
-                                        echo ', ' . $emp->getEmpWorkEmail();
+                                        echo $emp->getEmpWorkEmail();
                                     } else {
                                         echo $emp->getEmpWorkEmail();
                                     };
