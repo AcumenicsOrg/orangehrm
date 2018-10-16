@@ -1981,7 +1981,7 @@ class EmployeeDao extends BaseDao {
                         $conditions[] = ' j.id = ? ';
                         $bindParams[] = $searchBy;
                     } else if ($searchField == 'emp_work_telephone') {
-                        $conditions[] = ' e.custom1 LIKE ? ';
+                        $conditions[] = ' e.custom2 LIKE ? ';
                         $bindParams[] = $searchBy;
                     }else if ($searchField == 'employee_status') {
                         $conditions[] = ' es.id = ? ';
