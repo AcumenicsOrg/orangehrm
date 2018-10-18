@@ -78,12 +78,26 @@ if ((sizeof($list)) > 0) {
                                 <li style='font-size: 12px;'><?php echo $locs[0]; ?></li>
                                 <li style='font-size: 12px;'>
                                     <?php
-                                    echo $emp->getEmpWorkTelephone();
+                                    if($emp->getCustom2() && $emp->getCustom3()) {
+                                        echo $emp->getCustom2() . ' , ' . $emp->getCustom3();
+                                    } else {
+                                        echo $emp->getCustom2();
+                                        echo $emp->getCustom3();
+                                    }
+                                    ?>
+                                </li>
+                                <li style='font-size: 12px;'>
+                                    <?php
                                     if (($emp->getEmpWorkTelephone() != NULL && $emp->getEmpWorkEmail() != NULL)) {
                                         echo $emp->getEmpWorkEmail();
                                     } else {
                                         echo $emp->getEmpWorkEmail();
                                     };
+                                    ?>
+                                </li>
+                                <li style='font-size: 12px;'>
+                                    <?php
+                                    echo $emp->getEmpMobile();
                                     ?>
                                 </li>
                             </ul>

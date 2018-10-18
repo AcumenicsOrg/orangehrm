@@ -30,7 +30,7 @@ class EmployeeDirectoryDao extends BaseDao{
             'middleName' => 'e.emp_middle_name',
             'lastName' => 'e.emp_lastName',
             'job_title' => 'j.job_title',
-            'emp_work_telephone' => 'e.custom1',
+            'emp_work_telephone' => 'e.custom2',
             'emp_work_email' => 'e.emp_work_email',
             'employee_status' => 'es.estat_name',
             'sub_unit' => 'cs.name',
@@ -126,8 +126,7 @@ class EmployeeDirectoryDao extends BaseDao{
                 'cs.name AS subDivision, cs.id AS subDivisionId,' .
                 'j.job_title AS jobTitle, j.id AS jobTitleId, j.is_deleted AS isDeleted, ' .
                 'es.name AS employeeStatus, es.id AS employeeStatusId, '.
-                'CONCAT(COALESCE(CONCAT(e.custom1, \', \'),\'\'), COALESCE(CONCAT(e.custom2, \', \'),\'\')) as project_name, ' .
-                'e.emp_hm_telephone,  e.emp_mobile, e.emp_work_telephone, e.emp_work_email, e.emp_oth_email, '.
+                'e.emp_hm_telephone,  e.emp_mobile, e.emp_work_telephone, e.emp_work_email, e.emp_oth_email, e.custom2 as custom2, e.custom3 as custom3, '.
 
                 'GROUP_CONCAT(DISTINCT loc.id, \'##\',loc.name) AS locationIds';
               
@@ -165,7 +164,7 @@ class EmployeeDirectoryDao extends BaseDao{
                         $conditions[] = ' e.employee_id LIKE ? ';
                         $bindParams[] = $searchBy;
                     } else if ($searchField == 'emp_work_telephone') {
-                        $conditions[] = ' e.custom1 LIKE ? ';
+                        $conditions[] = ' e.custom2 LIKE ? ';
                         $bindParams[] = $searchBy;
                     } else if ($searchField == 'job_title') {
                         $conditions[] = ' j.id = ? ';
@@ -321,6 +320,8 @@ class EmployeeDirectoryDao extends BaseDao{
                     $employee->setEmpWorkTelephone($row['project_name']);
                     $employee->setEmpWorkEmail($row['emp_work_email']);
                     $employee->setEmpOthEmail($row['emp_oth_email']);
+                    $employee->setCustom2($row['custom2']);
+                    $employee->setCustom3($row['custom3']);
 
                     $jobTitle = new JobTitle();
                     $jobTitle->setId($row['jobTitleId']);
